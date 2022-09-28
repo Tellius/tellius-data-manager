@@ -192,7 +192,7 @@ steps:
       - docker ps -a
 
   - name: Build-Docker-File-Prod
-    image: ubuntu:18.04
+    image: docker:dind
     environment:
       DOCKER_HUB_SECRET:
         from_secret: prod_docker
