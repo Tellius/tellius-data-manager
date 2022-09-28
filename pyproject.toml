@@ -13,7 +13,7 @@
 #limitations under the License.
 [tool.poetry]
 name = "tellius_data_manager"
-version = "0.2.49"
+version = "0.2.50"
 description = ""
 authors = ["Tellius Open Source <tellius.open.source@tellius.com>"]
 readme = "README.md"

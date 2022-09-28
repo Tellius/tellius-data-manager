@@ -54,23 +54,23 @@ This means that the core processing unit of tdm is a Pipe. In implementation a P
 3. WriterPipe
 4. LogicsPipe (More on this one later - WIP)
 
-![Basic Pipeline](tellius_data_manager/images/pipe_scenario_1.png)
+![Basic Pipeline](images/pipe_scenario_1.png)
 
 Above is a very basic pipeline. This is still useful in many cases. It constitutes the simple act of reading data from one source and writing it to another.
 
-![Transform Pipeline](tellius_data_manager/images/pipe_scenario_2.png)
+![Transform Pipeline](images/pipe_scenario_2.png)
 
 This is the next step up in complexity. Here there is an intermediate step of applying a transformation to the data.
 
-![Multi Transform Pipeline](tellius_data_manager/images/pipe_scenario_3.png)
+![Multi Transform Pipeline](images/pipe_scenario_3.png)
 
 In some situations transformations have to happen in parallel - or for better execution time they are performed in parallel.
 
-![Complex Pipeline](tellius_data_manager/images/pipe_scenario_4.png)
+![Complex Pipeline](images/pipe_scenario_4.png)
 
 Pipelines can become very complex. In this situation there are multiple data sources, an intermediate write stage. A late stage read and finally a write to ultimately terminate the pipeline.
 
-![Example Pipeline](tellius_data_manager/images/pipe_scenario_5.png)
+![Example Pipeline](images/pipe_scenario_5.png)
 
 This is examplar of what may happen in a pipeline. In this case data is read from a RESTful endpoint. A data column is added to the data and a column represent a State (as in a State in the USA) is modified to a standard format. These two datasets are then joined and then written out to S3.
 
@@ -1409,7 +1409,7 @@ We currently using this approach here at Tellius. In our projects we create a pi
 
 The CI/CD flow is approximately this below at minimum
 
-![Basic Pipeline](tellius_data_manager/images/build_flow.png)
+![Basic Pipeline](images/build_flow.png)
 
 
 
