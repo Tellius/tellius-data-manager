@@ -196,7 +196,7 @@ steps:
     environment:
       DOCKER_HUB_SECRET:
         from_secret: prod_docker
-        DOCKER_HUB: telliusopensource/tellius-data-manager
+      DOCKER_HUB: telliusopensource/tellius-data-manager
     privileged: true
     volumes:
       - name: dockersock
