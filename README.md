@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.-->
 # Tellius Data Manager
 
-Add build status here
+[![Build Status](https://drone.app.tellius.com/api/badges/Tellius/tellius-data-manager/status.svg)](https://drone.app.tellius.com/Tellius/tellius-data-manager)
 
 ## About
 Tellius Data Manager - tdm - takes the approach that a data pipeline is a flow of information from ingest, transform, write, and possible additional transformation. That is, it is impossble to really do ETL or ELT in the modern data stack. Instead, it is ETLTLTLT... etc....
