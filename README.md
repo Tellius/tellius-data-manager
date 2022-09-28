@@ -330,7 +330,7 @@ for index, row in data1.iterrows():
         some_df = pd.DataFrame.from_dict(data)
         some_df["info"]=row['info']
         some_df["id"]=row['id']
-        another_df=security_df.append(some_df,sort=False)
+        another_df=another_df.append(some_df,sort=False)
         print('Information','info')
     except Exception as error:
         print("Error fetching data %s",id,error)
@@ -372,7 +372,7 @@ import various_libraries_here
 
 
 some_df = pd.DataFrame()
-security_df = pd.DataFrame()
+another_df = pd.DataFrame()
 
 payload = {}
 
@@ -403,7 +403,7 @@ for index, row in data1.iterrows():
         some_df = pd.DataFrame.from_dict(data)
         some_df["info"] = row["info"]
         some_df["id"] = row["id"]
-        another_df = security_df.append(some_df, sort=False)
+        another_df = another_df.append(some_df, sort=False)
         print("Information", "info")
     except Exception as error:
         print("Error fetching data %s", id, error)
@@ -441,7 +441,7 @@ Reading is a two step process in this example. The output of the first read is u
 *Read Step 1*
 ```python
 some_df = pd.DataFrame()
-security_df = pd.DataFrame()
+another_df = pd.DataFrame()
 
 payload = {}
 
@@ -475,7 +475,7 @@ for index, row in data1.iterrows():
         some_df = pd.DataFrame.from_dict(data)
         some_df["info"] = row["info"]
         some_df["id"] = row["id"]
-        another_df = security_df.append(some_df, sort=False)
+        another_df = another_df.append(some_df, sort=False)
         print("Information", "info")
     except Exception as error:
         print("Error fetching data %s", id, error)
@@ -764,7 +764,7 @@ class ReadExampleDataIteratively(ReaderPipe):
         some_df = pd.DataFrame.from_dict(data)
         some_df["info"] = row["info"]
         some_df["id"] = row["id"]
-        another_df = security_df.append(some_df, sort=False)
+        another_df = another_df.append(some_df, sort=False)
         print("Information", "info")
     except Exception as error:
         print("Error fetching data %s", id, error)
@@ -798,7 +798,7 @@ class ReadExampleDataIteratively(ReaderPipe):
         some_df = pd.DataFrame.from_dict(data)
         some_df["info"] = row["info"]
         some_df["id"] = row["id"]
-        another_df = security_df.append(some_df, sort=False)
+        another_df = another_df.append(some_df, sort=False)
         print("Information", "info")
     except Exception as error:
         print("Error fetching data %s", id, error)
