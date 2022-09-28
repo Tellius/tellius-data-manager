@@ -149,9 +149,9 @@ steps:
       - pip install poetry
 
       - echo "Build and Publish"
-      - poetry config repositories.pypi https://pypi.org/simple
       - poetry config pypi-token.pypi $PYPI_SECRET
-      - poetry publish --build -r pypi
+      - poetry build
+      - poetry publish
   - name: Build Developer Documentation Prod
     image: python:3.9.14-bullseye
     privileged: true
