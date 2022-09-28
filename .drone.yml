@@ -1,0 +1,237 @@
+# Copyright 2022 Tellius, Inc
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+kind: pipeline
+type: kubernetes
+name: tellius-data-manager-dev
+
+trigger:
+  event:
+    - push
+  branch:
+   exclude:
+     - main
+
+steps:
+  - name: build-and-publish-dev
+    image: python:3.9.14-bullseye
+    environment:
+      PYPI_SECRET:
+        from_secret: test_pypi_token
+    commands:
+      - echo "Installing Dependencies"
+
+      - pip install --upgrade pip
+      - pip install poetry
+
+      - echo "Build and Publish"
+      - poetry config repositories.test_pypi https://test.pypi.org/legacy/
+      - poetry config pypi-token.test_pypi $PYPI_SECRET
+      - poetry publish --build -r test_pypi
+  - name: Build Developer Documentation Dev
+    image: python:3.9.14-bullseye
+    privileged: true
+    volumes:
+      - name: dockersock
+        path: /var/run
+    commands:
+      - pip install --upgrade pip
+      - pip install pdoc3
+      - pip install poetry
+      - poetry config virtualenvs.create false
+      - poetry install
+      - pdoc --html --output-dir developer_documentation  tellius_data_manager
+node:
+  name: tellius-dev-aaa
+
+---
+kind: pipeline
+name: Docker Build Dev
+type: kubernetes
+
+trigger:
+  event:
+    - push
+  branch:
+   exclude:
+     - main
+
+steps:
+  - name: Dev Flow
+    image: docker:dind
+    volumes:
+      - name: dockersock
+        path: /var/run
+    commands:
+      - sleep 10
+      - docker ps -a
+
+  - name: Build-Docker-File-Dev
+    image: docker:dind
+    environment:
+      DOCKER_HUB_SECRET:
+        from_secret: test_docker
+      DOCKER_HUB: telliusopensource/tellius-data-manager-test
+    privileged: true
+    volumes:
+      - name: dockersock
+        path: /var/run
+    commands:
+      - sleep 10
+
+      - echo "Logging into Docker"
+      - docker login -u telliusopensource -p $DOCKER_HUB_SECRET
+
+      - echo "Building Docker Image"
+      - docker build --no-cache --progress plain -t tdm -f base_Dockerfile .
+
+      - export TAG=$DOCKER_HUB
+      - docker tag tdm $TAG
+      - echo $TAG
+      - docker push $TAG
+      - export VERSION=$(cat pyproject.toml | grep version | cut -b 12- | rev | cut -b 2- | rev)
+      - docker tag tdm $TAG:$VERSION
+      - docker push $TAG:$VERSION
+
+node:
+  name: tellius-dev-aaa
+
+services:
+- name: docker-dev
+  image: docker:dind
+  privileged: true
+  volumes:
+  - name: dockersock
+    path: /var/run
+
+volumes:
+- name: dockersock
+  temp: {}
+
+depends_on:
+  - tellius-data-manager-dev
+
+
+
+---
+kind: pipeline
+type: kubernetes
+name: tellius-data-manager-prod
+
+trigger:
+  event:
+    - push
+  branch:
+    - main
+
+
+steps:
+  - name: build-and-publish-prod
+    image: python:3.9.14-bullseye
+    environment:
+      PYPI_SECRET:
+        from_secret: prod_pypi_token
+    commands:
+      - echo "Installing Dependencies"
+
+      - pip install --upgrade pip
+      - pip install poetry
+
+      - echo "Build and Publish"
+      - poetry config repositories.test_pypi https://test.pypi.org/legacy/
+      - poetry config pypi-token.test_pypi $PYPI_SECRET
+      - poetry publish --build -r test_pypi
+  - name: Build Developer Documentation Prod
+    image: python:3.9.14-bullseye
+    privileged: true
+    volumes:
+      - name: dockersock
+        path: /var/run
+    commands:
+      - pip install --upgrade pip
+      - pip install pdoc3
+      - cd tellius_data_manager
+      - pip install poetry
+      - poetry config virtualenvs.create false
+      - poetry install
+      - pdoc --html --output-dir developer_documentation  tellius_data_manager
+node:
+  name: tellius-dev-aaa
+
+---
+kind: pipeline
+name: Docker Build Prod
+type: kubernetes
+
+trigger:
+  event:
+    - push
+  branch:
+    - main
+
+
+steps:
+  - name: Prod Flow
+    image: docker:dind
+    volumes:
+      - name: dockersock
+        path: /var/run
+    commands:
+      - sleep 10
+      - docker ps -a
+
+  - name: Build-Docker-File-Prod
+    image: ubuntu:18.04
+    environment:
+      DOCKER_HUB_SECRET:
+        from_secret: prod_docker
+        DOCKER_HUB: telliusopensource/tellius-data-manager
+    privileged: true
+    volumes:
+      - name: dockersock
+        path: /var/run
+    commands:
+      - sleep 10
+
+      - echo "Logging into Docker"
+      - docker login -u telliusopensource -p $DOCKER_HUB_SECRET
+
+      - echo "Building Docker Image"
+      - docker build --no-cache --progress plain -t tdm -f base_Dockerfile .
+
+      - export TAG=$DOCKER_HUB
+      - docker tag tdm $TAG
+      - echo $TAG
+      - docker push $TAG
+      - export VERSION=$(cat pyproject.toml | grep version | cut -b 12- | rev | cut -b 2- | rev)
+      - docker tag tdm $TAG:$VERSION
+      - docker push $TAG:$VERSION
+
+node:
+  name: tellius-dev-aaa
+
+services:
+- name: docker-prod
+  image: docker:dind
+  privileged: true
+  volumes:
+  - name: dockersock
+    path: /var/run
+
+volumes:
+- name: dockersock
+  temp: {}
+
+depends_on:
+  - tellius-data-manager-prod
