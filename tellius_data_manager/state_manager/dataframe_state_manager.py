@@ -70,7 +70,8 @@ class DataframeStateManager(StateManager):
 
     def read(self, **kwargs) -> StateManager:
         df = self._reader.execute()
-        df.sort_values(by=["start_time"], ascending=False, inplace=True)
+        if df.shape[0] > 0:
+            df.sort_values(by=["start_time"], ascending=False, inplace=True)
         self._state = df
         return self
 
