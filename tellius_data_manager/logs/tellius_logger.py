@@ -49,5 +49,13 @@ class TelliusLogger(logging.getLoggerClass()):  # type: ignore
 
     def _log(self, level: str, msg: object, args, exc_info=None, extra=None):
         if extra is None:
-            extra = {"class": inspect.stack()[2][0].f_locals["self"].__class__.__name__}
+            class_info = ""
+            for index in range(5,0,-1):
+                try:
+                    class_info = inspect.stack()[2][0].f_locals["self"].__class__.__name__
+                    break
+                except:
+                    pass
+            extra = {"class": class_info}
+
         super()._log(level, msg, args, exc_info, extra)
