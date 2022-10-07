@@ -79,7 +79,10 @@ class TelliusObject:
 
     def _raise_alert(self, exception: Exception) -> None:
         for alert in self.__alert_managers:
-            alert.send_alert((traceback.format_exc()))
+            try:
+                alert.send_alert((traceback.format_exc()))
+            except:
+                self._logger.warning(msg=f'There is an issue with the alerting mechanism: {traceback.format_exc()}')
 
     def _return_base_object_error(self):
         return NotImplementedError(
