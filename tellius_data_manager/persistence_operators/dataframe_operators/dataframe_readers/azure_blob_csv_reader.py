@@ -54,14 +54,17 @@ class AzureBlobCSVReader(CSVReader):
         )
 
         if filename_filter:
-            filename_filter = f" {filename_filter} "
+            filename_filter_1 = f" {filename_filter} "
+            filename_filter_2 = f"{filename_filter}-"
 
         if filename is None:
             df = pd.DataFrame()
             blobs = list(container_client.list_blobs())
 
             if filename_filter:
-                blobs = [blob for blob in blobs if filename_filter in blob.name]
+                blobs_1 = [blob for blob in blobs if filename_filter_1 in blob.name]
+                blobs_1.extend([blob for blob in blobs if filename_filter_2 in blob.name])
+            blobs = blobs_1
 
             for blob in blobs:
                 blob_client = container_client.get_blob_client(blob=blob)
