@@ -53,6 +53,9 @@ class AzureBlobCSVReader(CSVReader):
             container=self._container
         )
 
+        if filename_filter:
+            filename_filter = f" {filename_filter} "
+
         if filename is None:
             df = pd.DataFrame()
             blobs = list(container_client.list_blobs())
