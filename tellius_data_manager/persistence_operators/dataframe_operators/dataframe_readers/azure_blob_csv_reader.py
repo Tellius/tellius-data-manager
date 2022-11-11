@@ -29,7 +29,7 @@ class AzureBlobCSVReader(CSVReader):
         super().__init__(**kwargs)
         self._container = kwargs.get("container")
 
-    def execute(self, filename: str = None, **kwargs) -> pd.DataFrame:
+    def execute(self, filename: str = None, filename_filter: str = None, **kwargs) -> pd.DataFrame:
         # There is a well known bug in boto3 that will cause this to raise an invalid warning. Sessions work with a
         # collection pool and are handled behind the scenes.
         warnings.filterwarnings(
@@ -53,11 +53,22 @@ class AzureBlobCSVReader(CSVReader):
             container=self._container
         )
 
+        if filename_filter:
+            filename_filter_1 = f" {filename_filter} "
+            filename_filter_2 = f"{filename_filter}-"
+
         if filename is None:
             df = pd.DataFrame()
-            for blob in container_client.list_blobs():
+            blobs = list(container_client.list_blobs())
+
+            if filename_filter:
+                blobs_1 = [blob for blob in blobs if filename_filter_1 in blob.name]
+                blobs_1.extend([blob for blob in blobs if filename_filter_2 in blob.name])
+            blobs = blobs_1
+
+            for blob in blobs:
                 blob_client = container_client.get_blob_client(blob=blob)
                 data = io.StringIO(blob_client.download_blob().readall().decode())
-                df = pd.concat([df, pd.read_csv(data)])
+                df = pd.concat([df, pd.read_csv(data)], ignore_index=True)
 
         return df

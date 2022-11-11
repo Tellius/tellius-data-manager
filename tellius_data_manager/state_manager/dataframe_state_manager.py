@@ -18,14 +18,8 @@ from typing import Dict
 
 import pandas as pd
 
-from tellius_data_manager.persistence_operators.dataframe_operators.dataframe_readers.azure_blob_csv_reader import (
-    AzureBlobCSVReader,
-)
 from tellius_data_manager.persistence_operators.dataframe_operators.dataframe_readers.dataframe_reader_factory import (
     DataframeReaderFactory,
-)
-from tellius_data_manager.persistence_operators.dataframe_operators.dataframe_writers.azure_blob_csv_writer import (
-    AzureBlobCSVWriter,
 )
 from tellius_data_manager.persistence_operators.dataframe_operators.dataframe_writers.dataframe_writer_factory import (
     DataframeWriterFactory,
@@ -68,9 +62,10 @@ class DataframeStateManager(StateManager):
     def state(self):
         return self._state
 
-    def read(self, **kwargs) -> StateManager:
-        df = self._reader.execute()
-        df.sort_values(by=["start_time"], ascending=False, inplace=True)
+    def read(self, asset_filter: str = None, **kwargs) -> StateManager:
+        df = self._reader.execute(filename_filter=asset_filter)
+        if df.shape[0] > 0:
+            df.sort_values(by=["start_time"], ascending=False, inplace=True)
         self._state = df
         return self
 
